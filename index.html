@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Silver Niche Chatbot</title>
+    <style>
+        #n8nChatContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+        }
+        #n8nChatMessages {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        #n8nChatInputArea {
+            display: flex;
+            border-top: 1px solid #ccc;
+        }
+        #n8nChatInput {
+            flex: 1;
+            border: none;
+            padding: 10px;
+        }
+        #n8nChatSend {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div id="n8nChatContainer">
+    <div id="n8nChatMessages"></div>
+    <div id="n8nChatInputArea">
+        <input type="text" id="n8nChatInput" placeholder="اكتب سؤالك...">
+        <button id="n8nChatSend">إرسال</button>
+    </div>
+</div>
+
+<script src="chatbot.js"></script>
+</body>
+</html>
