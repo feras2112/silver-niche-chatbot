@@ -1,32 +1,40 @@
-async function sendMessageToN8N(message) {
-  const encodedMessage = encodeURIComponent(message);
-  const url = `https://esraaniche.app.n8n.cloud/webhook/silver-niche?message=${encodedMessage}`;
 
-  const response = await fetch(url, {
-    method: "GET"
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("chat-form");
+  const input = document.getElementById("user-input");
+  const chatbox = document.getElementById("chatbox");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const userInput = input.value.trim();
+    if (!userInput) return;
+
+    appendMessage("أنت", userInput);
+    input.value = "";
+    respond(userInput);
   });
 
-  const data = await response.json();
-  return data.reply || "عذرًا، لم أتمكن من الفهم.";
-}
+  function appendMessage(sender, message) {
+    const msg = document.createElement("div");
+    msg.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    chatbox.appendChild(msg);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
 
-document.getElementById("send-btn").addEventListener("click", async () => {
-  const userInput = document.getElementById("user-input").value.trim();
-  if (!userInput) return;
+  function respond(userInput) {
+    let response = "عذرًا، لم أفهم سؤالك.";
+    const lower = userInput.toLowerCase();
 
-  addMessage(userInput, "user");
+    if (lower.includes("عطر") || lower.includes("perfume")) {
+      response = "لدينا مجموعة من أفخم العطور في سيلفر نيش، هل تبحث عن عطر رجالي أم نسائي؟";
+    } else if (lower.includes("سعر") || lower.includes("price")) {
+      response = "الأسعار تبدأ من 350 ريال وتصل حتى 3400 ريال حسب الفئة.";
+    } else if (lower.includes("طلب") || lower.includes("buy") || lower.includes("purchase")) {
+      response = "يمكنك الطلب مباشرة من خلال متجرنا الإلكتروني أو التواصل مع خدمة العملاء.";
+    } else if (lower.includes("hello") || lower.includes("hi") || lower.includes("مرحبا")) {
+      response = "مرحبًا بك في سيلفر نيش! كيف يمكنني مساعدتك اليوم؟";
+    }
 
-  const reply = await sendMessageToN8N(userInput);
-  addMessage(reply, "bot");
-
-  document.getElementById("user-input").value = "";
+    appendMessage("المساعد", response);
+  }
 });
-
-// دالة عرض الرسائل داخل صفحة الشات
-function addMessage(text, sender) {
-  const chatBox = document.getElementById("chat-box");
-  const messageElement = document.createElement("div");
-  messageElement.className = sender;
-  messageElement.innerText = text;
-  chatBox.appendChild(messageElement);
-}
