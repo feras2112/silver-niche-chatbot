@@ -53,6 +53,37 @@
     <button type="submit">إرسال</button>
     <input type="text" id="user-input" placeholder="اكتب سؤالك هنا..." autocomplete="off" />
   </form>
-  <script src="chatbot.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const chatbox = document.getElementById("chatbox");
+      const form = document.getElementById("chat-form");
+      const input = document.getElementById("user-input");
+
+      function addMessage(sender, text) {
+        const msg = document.createElement("div");
+        msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
+        chatbox.appendChild(msg);
+        chatbox.scrollTop = chatbox.scrollHeight;
+      }
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+        addMessage("أنت", message);
+        input.value = "";
+
+        const res = await fetch("https://esraaniche.app.n8n.cloud/webhook-test/silver-niche-chatbot", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await res.json();
+        addMessage("المساعد", data.reply || "عذرًا، لم أفهم سؤالك.");
+      });
+    });
+  </script>
 </body>
 </html>
