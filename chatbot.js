@@ -1,36 +1,40 @@
-document.getElementById("chat-form").addEventListener("submit", async function (e) {
-  e.preventDefault();
-  const userInput = document.getElementById("user-input");
-  const message = userInput.value.trim();
 
-  if (message === "") return;
+async function sendMessage() {
+    const messageInput = document.getElementById("message");
+    const chatBox = document.getElementById("chat");
+    const userMessage = messageInput.value.trim();
+    if (userMessage === "") return;
 
-  appendMessage("أنت", message);
-  userInput.value = "";
+    // عرض رسالة المستخدم
+    const userDiv = document.createElement("div");
+    userDiv.className = "user";
+    userDiv.textContent = "أنت: " + userMessage;
+    chatBox.appendChild(userDiv);
+    messageInput.value = "";
 
-  try {
-    const response = await fetch("https://esraaniche.app.n8n.cloud/webhook/silver-niche-chatbot", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message }),
-    });
+    // إرسال الرسالة إلى Webhook في n8n
+    try {
+        const response = await fetch("https://esraaniche.app.n8n.cloud/webhook/b6951bf9-5e0c-4210-95fc-acf5c877b419", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: userMessage })
+        });
 
-    const data = await response.json();
-    const reply = data.reply || "عذرًا، لم أفهم سؤالك.";
-    appendMessage("المساعد", reply);
+        const data = await response.json();
+        const botMessage = data.reply || "المساعد: حصل خطأ غير متوقع.";
 
-  } catch (error) {
-    appendMessage("المساعد", "حدث خطأ أثناء الاتصال بالخادم.");
-    console.error("Error:", error);
-  }
-});
+        const botDiv = document.createElement("div");
+        botDiv.className = "bot";
+        botDiv.textContent = "المساعد: " + botMessage;
+        chatBox.appendChild(botDiv);
+    } catch (error) {
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "bot";
+        errorDiv.textContent = "المساعد: حدث خطأ أثناء الاتصال بالخادم.";
+        chatBox.appendChild(errorDiv);
+    }
 
-function appendMessage(sender, text) {
-  const chatbox = document.getElementById("chatbox");
-  const messageDiv = document.createElement("div");
-  messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
-  chatbox.appendChild(messageDiv);
-  chatbox.scrollTop = chatbox.scrollHeight;
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
