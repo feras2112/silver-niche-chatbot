@@ -1,44 +1,36 @@
+document.getElementById("chat-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const userInput = document.getElementById("user-input");
+  const message = userInput.value.trim();
 
-document.addEventListener("DOMContentLoaded", function () {
-  const chatLog = document.getElementById("chat-log");
-  const chatInput = document.getElementById("chat-input");
-  const sendButton = document.getElementById("send-button");
+  if (message === "") return;
 
-  function appendMessage(sender, message) {
-    const messageElement = document.createElement("div");
-    messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
-    chatLog.appendChild(messageElement);
-    chatLog.scrollTop = chatLog.scrollHeight;
+  appendMessage("أنت", message);
+  userInput.value = "";
+
+  try {
+    const response = await fetch("https://esraaniche.app.n8n.cloud/webhook/silver-niche-chatbot", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await response.json();
+    const reply = data.reply || "عذرًا، لم أفهم سؤالك.";
+    appendMessage("المساعد", reply);
+
+  } catch (error) {
+    appendMessage("المساعد", "حدث خطأ أثناء الاتصال بالخادم.");
+    console.error("Error:", error);
   }
-
-  async function sendMessage() {
-    const userMessage = chatInput.value.trim();
-    if (!userMessage) return;
-
-    appendMessage("أنت", userMessage);
-    chatInput.value = "";
-
-    try {
-      const response = await fetch("https://esraaniche.app.n8n.cloud/webhook/b6951bf9-5e0c-4210-95fc-acf5c877b419", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: userMessage })
-      });
-
-      const data = await response.json();
-      const botReply = data.reply || "عذرًا، لم أفهم سؤالك.";
-      appendMessage("المساعد", botReply);
-    } catch (error) {
-      appendMessage("المساعد", "حدث خطأ أثناء إرسال الرسالة.");
-    }
-  }
-
-  sendButton.addEventListener("click", sendMessage);
-  chatInput.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      sendMessage();
-    }
-  });
 });
+
+function appendMessage(sender, text) {
+  const chatbox = document.getElementById("chatbox");
+  const messageDiv = document.createElement("div");
+  messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+  chatbox.appendChild(messageDiv);
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
